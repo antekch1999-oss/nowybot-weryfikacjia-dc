@@ -1,8 +1,14 @@
+require('dotenv').config(); // linia 1
+
 const { Client, GatewayIntentBits, ActionRowBuilder, ButtonBuilder, ButtonStyle, ModalBuilder, TextInputBuilder, TextInputStyle, Events, EmbedBuilder } = require('discord.js');
+const express = require('express');
+const app = express();
 
-const TOKEN = 'MTQ4OTU2OTY2MzM3NjU2MDI3OQ.G6xFev.2O_UZAd1-M9x0qUN513BJYmxbx6cBdiJZxwGNw'; // <- Wstaw tutaj swój token
-const VERIFIED_ROLE_ID = '1489292794299420926'; // <- ID roli
+// --- KONFIGURACJA ---
+const MTQ4OTU2OTY2MzM3NjU2MDI3OQ.GA18iS.bJSWXnPfcjlbM9Y0SbyMUL3NVg4ELQH8sttH1Q = process.env.TOKEN; // <- w Render ustawione w Environment Variables
+const VERIFIED_ROLE_ID = '1489292794299420926'; // ID roli
 
+// --- INICJALIZACJA BOTA ---
 const client = new Client({
   intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMessages, GatewayIntentBits.MessageContent]
 });
@@ -11,15 +17,16 @@ client.once('ready', () => {
   console.log(`Zalogowano jako ${client.user.tag}`);
 });
 
+// --- KOMENDA !setup ---
 client.on('messageCreate', async (message) => {
   if (message.author.bot) return;
 
   if (message.content === '!setup') {
     const embed = new EmbedBuilder()
       .setColor('#00FFFF')
-      .setTitle('🎁 | 𝗪𝗘𝗥𝗬𝗙𝗜𝗞𝗔𝗖𝗝𝗔 • LexmurGG')
+      .setTitle('🎁 | 𝗪𝗘𝗥𝗬𝗙𝗜𝗞𝗔𝗖𝗝𝗔 • WAMPIRMC.PL')
       .setDescription('Kliknij przycisk, aby rozpocząć weryfikację. Po poprawnej odpowiedzi bot nada Ci rolę.')
-      .setFooter({ text: 'LexmurGG • System weryfikacji' });
+      .setFooter({ text: 'WampirMC.PL • System weryfikacji' });
 
     const button = new ButtonBuilder()
       .setCustomId('verify')
@@ -31,6 +38,7 @@ client.on('messageCreate', async (message) => {
   }
 });
 
+// --- OBSŁUGA PRZYCISKU I MODALA ---
 client.on(Events.InteractionCreate, async (interaction) => {
   if (interaction.isButton() && interaction.customId === 'verify') {
     const a = Math.floor(Math.random() * 10) + 1;
@@ -64,4 +72,10 @@ client.on(Events.InteractionCreate, async (interaction) => {
   }
 });
 
-client.login(MTQ4OTU2OTY2MzM3NjU2MDI3OQ.G6xFev.2O_UZAd1-M9x0qUN513BJYmxbx6cBdiJZxwGNw);
+// --- LOGOWANIE BOTA ---
+client.login(TOKEN);
+
+// --- EXPRESS DLA RENDER ---
+const PORT = process.env.PORT || 10000;
+app.get('/', (req, res) => res.send('Bot działa!'));
+app.listen(PORT, () => console.log(`Serwis działa na porcie ${PORT}`));
